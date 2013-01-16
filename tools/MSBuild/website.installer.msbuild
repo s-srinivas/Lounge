@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Website-Installer-CreateWebsite" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- to test <Import Project="sample.settings.msbuild"/>-->
+  
+  <Import Project="$(ExtensionTasksPath)MSBuild.ExtensionPack.tasks"/>
+  <Import Project="$(MSBuildCommunityTasksPath)MSBuild.Community.Tasks.targets" />
+  
+  <PropertyGroup>
+	<IPAddress Condition="'$(IPAddress)' == ''">*</IPAddress>
+  </PropertyGroup>
+    
+  <Target Name="Website-Installer-CreateWebsite">    
+    <Message Text="Create an Environment specific website.settings.msbuild file, see sample.website.settings.msbuild file" Condition="$(Environment) == ''"/>
+    <Message Text="Importing settings file : $(Environment).settings.msbuild" Condition="$(Environment) != ''"/>    
+    <Message Text="The WebsiteName property must be defined" Condition="$(WebsiteName) == ''"/>
+    <Message Text="The WebsiteDir property must be defined" Condition="$(WebsiteDir) == ''"/>
+    <Message Text="WebsiteName : $(WebsiteName)" />
+    <Message Text="WebsiteDir  : $(WebsiteDir)" />
+    <Message Text="AppPoolName : $(AppPoolName)" />
+    <Message Text="HostHeader  : $(HostHeader)" />    
+    
+    <CallTarget Targets="Website-Installer-DeleteAndCreateAppPool"/>
+    <Sleep Milliseconds="2000" />
+
+    <CallTarget Targets="Website-Installer-CleanupWebsiteFolder"/>
+    
+    <CallTarget Targets="Website-Installer-DeleteAndCreateWebsite"/>
+    
+    <CallTarget Targets="Website-Installer-DeleteAndCreateApplications"/>
+      
+    <CallTarget Targets="Website-Installer-CreateHostHeaders"/>
+    <Sleep Milliseconds="2000" />
+
+    <CallTarget Targets="Website-Installer-StartWebsite"/>    
+  </Target>
+
+  <Target Name="Website-Installer-DeleteAndCreateWebsite">
+    <Iis7Website TaskAction="CheckExists" Name="$(WebsiteName)">
+      <Output TaskParameter="Exists" PropertyName="SiteExists"/>
+    </Iis7Website>
+    <Message Text="Website $(WebsiteName) exists: $(SiteExists)"/>
+
+    <Iis7Website TaskAction="Delete" Name="$(WebsiteName)" Condition="$(SiteExists) == 'True'"/>
+    <Iis7Website TaskAction="Create" Name="$(WebsiteName)" AppPool="$(AppPoolName)" Path="$(WebsiteDir)" Port="$(WebsitePort)" Force="true">
+      <Output TaskParameter="SiteId" PropertyName="NewSiteId"/>
+    </Iis7Website>
+
+    <Message Text="Created website $(WebsiteName) with site Id $(NewSiteId) successfully"/>
+  </Target>
+
+  <Target Name="Website-Installer-CleanupWebsiteFolder">
+    <!-- Cleanup Folders -->
+    <Delete Condition="Exists('$(WebsiteDir)')" Files="$(WebsiteDir)**\*.*"/>
+    <Message Text="Cleaned up files in website folder $(WebsiteDir)" />
+
+  </Target>
+
+  <Target Name="Website-Installer-DeleteAndCreateApplications">
+    <Iis7Application TaskAction="Delete" Website="$(WebsiteName)" Applications="@(Applications)"/>
+    <Iis7Website TaskAction="AddApplication" Name="$(WebsiteName)" Applications="@(Applications)"/>
+  </Target>
+  
+  <Target Name="Website-Installer-DeleteAndCreateAppPool">
+    <Iis7AppPool TaskAction="CheckExists" Name="$(AppPoolName)">
+      <Output TaskParameter="Exists" PropertyName="AppPoolExists"/>
+    </Iis7AppPool>
+    <Message Text="Application Pool $(AppPoolName) exists: $(AppPoolExists)"/>
+    <Iis7AppPool TaskAction="Delete" Name="$(AppPoolName)" Condition="$(AppPoolExists) == 'True'"/>
+    <Iis7AppPool TaskAction="Create" Name="$(AppPoolName)"/>
+    <Iis7AppPool TaskAction="SetPipelineMode" Name="$(AppPoolName)" PipelineMode="Integrated"/>
+    <Iis7AppPool TaskAction="Modify" Name="$(AppPoolName)" ManagedRuntimeVersion="$(RunTimeVersion)"/>
+    <Iis7AppPool TaskAction="SetIdentity" Name="$(AppPoolName)" IdentityType="NetworkService"/>
+    <Sleep Milliseconds="2000" />
+    <Iis7AppPool TaskAction="Start" Name="$(AppPoolName)"/>
+  </Target>
+  
+  <Target Name="Website-Installer-CreateHostHeaders">
+    <!-- Add Host Headers -->
+    <Iis7Binding TaskAction="Remove" Name="$(WebsiteName)" BindingInformation="$(IPAddress):80:" BindingProtocol="http" />
+    <Iis7Binding TaskAction="CheckExists" Name="$(WebsiteName)" BindingInformation="$(IPAddress):80:$(HostHeader)" BindingProtocol="http">
+      <Output TaskParameter="Exists" PropertyName="HostHeaderExist"/>
+    </Iis7Binding>
+    <Message Text="HostHeader $(HostHeader) for website $(WebsiteName) Exists: $(HostHeaderExist)"/>
+    <Iis7Binding TaskAction="Add" Name="$(WebsiteName)" BindingInformation="$(IPAddress):80:$(HostHeader)" BindingProtocol="http" Condition="$(HostHeaderExist) == 'False'"/>
+    <Message Text="Created host header $(HostHeader)" Condition="$(HostHeaderExist) == 'False'"/>
+  </Target>
+
+  <Target Name="Website-Installer-StartWebsite">
+    <Iis7Website TaskAction="CheckExists" Name="$(WebsiteName)">
+      <Output TaskParameter="Exists" PropertyName="SiteExists"/>
+    </Iis7Website>
+    <Message Text="Website $(WebsiteName) exists: $(SiteExists)"/>
+    <Iis7Website TaskAction="Start" Name="$(WebsiteName)"/>
+    <Message Text="Started website $(WebsiteName) successfully"/>
+  </Target>
+  
+</Project>

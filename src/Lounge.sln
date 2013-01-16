@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{28653FBF-2638-4C1B-99F2-A54ABEC1F057}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{A2DADC0B-BCB6-43FD-95CB-9CF1BC6BD72C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C01FEE3E-21F2-45F8-8021-A63EDF3989D2}"
+	ProjectSection(SolutionItems) = preProject
+		..\main.msbuild = ..\main.msbuild
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{28653FBF-2638-4C1B-99F2-A54ABEC1F057}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28653FBF-2638-4C1B-99F2-A54ABEC1F057}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28653FBF-2638-4C1B-99F2-A54ABEC1F057}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28653FBF-2638-4C1B-99F2-A54ABEC1F057}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2DADC0B-BCB6-43FD-95CB-9CF1BC6BD72C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2DADC0B-BCB6-43FD-95CB-9CF1BC6BD72C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2DADC0B-BCB6-43FD-95CB-9CF1BC6BD72C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2DADC0B-BCB6-43FD-95CB-9CF1BC6BD72C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

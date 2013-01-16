@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\tools\MSBuild\MSBuild.Community.Tasks.Targets" />
+  <Import Project="$(MSBuildProjectDirectory)\tools\MSBuild\MSBuild.ExtensionPack.tasks" />
+
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SolutionFile>$(MSBuildProjectDirectory)\src\Lounge.sln</SolutionFile>
+    <BuildDir>$(MSBuildProjectDirectory)\Build</BuildDir>
+    <ReleaseDir>$(BuildDir)\_release</ReleaseDir>
+    <ToolsDir>$(MSBuildProjectDirectory)\tools</ToolsDir>
+  </PropertyGroup>
+
+  <Target Name="Cleanup">
+    <Message Text="##teamcity[progressMessage 'Cleaning up release folder']" />
+    <RemoveDir Directories="$(ReleaseDir)" />
+    <MakeDir Directories="$(ReleaseDir)" />
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="Cleanup">
+    <Message Text="##teamcity[progressMessage 'Building solution in $(Configuration) Configuration']" />
+    <MSBuild Projects="$(SolutionFile);" Targets="Build" Properties="Configuration=$(Configuration);SkipPostSharp=true" BuildInParallel="true" />
+  </Target>
+
+  <Target Name="PrepareRelease" DependsOnTargets="Build">
+    <ItemGroup>
+      <TestFiles Include="$(MSBuildProjectDirectory)\src\Tests\bin\**" />
+      <Assemblies Include="$(MSBuildProjectDirectory)\src\Core\bin\**" />
+    </ItemGroup>
+
+    <Message Text="##teamcity[progressMessage 'Copying lounge core assemblies']" />
+    <Copy SourceFiles="@(Assemblies)" DestinationFolder="$(ReleaseDir)\libs\%(RecursiveDir)" SkipUnchangedFiles="true"/>
+
+    <Message Text="##teamcity[progressMessage 'Copying test assemblies']" />
+    <Copy SourceFiles="@(TestFiles)" DestinationFolder="$(ReleaseDir)\libs\tests\%(RecursiveDir)" SkipUnchangedFiles="true"/>
+
+  </Target>
+
+  <Target Name="Run-Tests" DependsOnTargets="PrepareRelease">
+    <ItemGroup>
+      <TestAssembly Include="$(UnitTestsDir)\VoucherManager.UnitTests.dll"/>
+    </ItemGroup>
+    <NUnit ToolPath="$(ToolsDir)\NUnit\2.5.10" DisableShadowCopy="true" Assemblies="@(TestAssembly)" />
+  </Target>
+
+</Project>
+
