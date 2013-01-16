@@ -1,2 +1,6 @@
-Prerquistes
-You will need nunit and msbuild installed on your machine to run the build
+Pre-requistes
+
+You will need 
+nunit 
+msbuild 
+ApacheCouchDb
