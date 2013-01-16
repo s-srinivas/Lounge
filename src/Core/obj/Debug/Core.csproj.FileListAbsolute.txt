@@ -1,8 +1,0 @@
-C:\Source\tsqldotnet\Lounge\src\Core\bin\Lounge.Core.dll
-C:\Source\tsqldotnet\Lounge\src\Core\bin\Lounge.Core.pdb
-C:\Source\tsqldotnet\Lounge\src\Core\bin\Newtonsoft.Json.dll
-C:\Source\tsqldotnet\Lounge\src\Core\bin\Newtonsoft.Json.pdb
-C:\Source\tsqldotnet\Lounge\src\Core\bin\Newtonsoft.Json.xml
-C:\Source\tsqldotnet\Lounge\src\Core\obj\Debug\ResolveAssemblyReference.cache
-C:\Source\tsqldotnet\Lounge\src\Core\obj\Debug\Lounge.Core.dll
-C:\Source\tsqldotnet\Lounge\src\Core\obj\Debug\Lounge.Core.pdb
